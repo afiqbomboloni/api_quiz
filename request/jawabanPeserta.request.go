@@ -20,3 +20,9 @@ type JawabanPesertaRequest struct {
 	JawabanPeserta int `json:"jawaban_peserta"`
 	Skor          int `json:"skor"`
 }
+
+type UpdateSkorRequest struct {
+	IdUser        uint `json:"id_user"`
+	IdQuiz        uint `json:"id_quiz"`
+	Skor          int `json:"skor"`
+}

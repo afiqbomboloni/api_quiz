@@ -25,6 +25,23 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+func AdminLoginMiddleware() gin.HandlerFunc {
+	// cek apakah user yang login adalah admin berdasarkan role, jika bukan maka akan di reject
+	return func(ctx *gin.Context) {
+		role := ctx.GetString("role")
+		if role != "admin" {
+			ctx.JSON(http.StatusUnauthorized, gin.H{
+				"message": "Unauthorized",
+				"errors":  "You are not authorized to access this resource",
+			})
+			ctx.Abort()
+			return
+		}
+		ctx.Next()
+	
+	}
+}
+
 func CorsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")

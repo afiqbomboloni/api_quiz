@@ -13,4 +13,5 @@ type JawabanPeserta struct {
     JawabanPeserta int `gorm:"not null;" json:"jawaban_peserta"`
     Skor          int `json:"skor"`
     User          User `gorm:"foreignKey:IdUser"`
+    Quiz          Quiz `gorm:"foreignKey:IdQuiz"`
 }

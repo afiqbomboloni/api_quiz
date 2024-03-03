@@ -15,6 +15,12 @@ type JawabanPesertaService interface {
 	Create(jawabanPesertaRequest request.JawabanPesertaRequest) (entity.JawabanPeserta, error)
 	Update(ID uint, jawabanPesertaRequest request.JawabanPesertaRequest) (entity.JawabanPeserta, error)
 	Delete(ID uint) (entity.JawabanPeserta, error)
+	CountQuestion(IdQuiz uint) (int64, error)
+	CountRightAnswer(IdQuiz uint, IdUser uint, IdPertanyaan uint, JawabanPeserta int) (int64)
+	FindAllWIthUniqueUser() ([]entity.JawabanPeserta, error)
+	UpdateSkor(jawabanPesertaRequest request.UpdateSkorRequest) (entity.JawabanPeserta, error)
+	FindByIDUserAndIDQuiz(IDUser, IDQuiz string) (entity.JawabanPeserta, error)
+
 }
 
 type jawabanPesertaService struct {
@@ -27,6 +33,37 @@ func NewJawabanPesertaService(jawabanPesertaRepository repository.JawabanPeserta
 
 func (s *jawabanPesertaService) FindAll() ([]entity.JawabanPeserta, error) {
 	return s.jawabanPesertaRepository.FindAll()
+}
+
+func (s *jawabanPesertaService) CountQuestion(IdQuiz uint) (int64, error) {
+	return s.jawabanPesertaRepository.CountQuestion(IdQuiz)
+
+}
+
+func (s *jawabanPesertaService) CountRightAnswer(IdQuiz uint, IdUser uint, IdPertanyaan uint, JawabanPeserta int) (int64) {
+	return s.jawabanPesertaRepository.CountRightAnswer(IdQuiz, IdUser, IdPertanyaan, JawabanPeserta)
+
+
+}
+
+func (s *jawabanPesertaService) FindAllWIthUniqueUser() ([]entity.JawabanPeserta, error) {
+	return s.jawabanPesertaRepository.FindAllWIthUniqueUser()
+
+}
+
+func (s *jawabanPesertaService) UpdateSkor(jawabanPesertaRequest request.UpdateSkorRequest) (entity.JawabanPeserta, error) {
+    jawabanPeserta := entity.JawabanPeserta{
+        IdUser: jawabanPesertaRequest.IdUser,
+        IdQuiz: jawabanPesertaRequest.IdQuiz,
+        Skor:   jawabanPesertaRequest.Skor,
+       
+    }
+    return s.jawabanPesertaRepository.UpdateSkor(jawabanPeserta)
+}
+
+func (s *jawabanPesertaService) FindByIDUserAndIDQuiz(IDUser, IDQuiz string) (entity.JawabanPeserta, error) {
+	return s.jawabanPesertaRepository.FindByIDUserAndIDQuiz(IDUser, IDQuiz)
+
 }
 
 func (s *jawabanPesertaService) FindByID(ID uint) (entity.JawabanPeserta, error) {

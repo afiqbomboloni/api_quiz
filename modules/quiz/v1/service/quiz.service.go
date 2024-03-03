@@ -9,11 +9,12 @@ import (
 )
 
 type QuizService interface {
-	FindAll() ([]entity.Quiz, error)
+	FindAll(limit, page uint64, isNotExpired string) ([]entity.Quiz, error)
 	FindByID(id uint) (entity.Quiz, error)
 	Create(quizRequest request.QuizRequest) (entity.Quiz, error)
 	Update(id uint, quizRequest request.QuizRequest) (entity.Quiz, error)
 	Delete(id uint) (entity.Quiz, error)
+	CountQuestion(IdQuiz uint) (int64, error)
 }
 
 type quizService struct {
@@ -24,8 +25,13 @@ func NewQuizService(quizRepository repository.QuizRepository) *quizService {
 	return &quizService{quizRepository}
 }
 
-func (s *quizService) FindAll() ([]entity.Quiz, error) {
-	quizzes, err := s.quizRepository.FindAll()
+func (s *quizService) CountQuestion(IdQuiz uint) (int64, error) {
+	count, err := s.quizRepository.CountQuestion(IdQuiz)
+	return count, err
+
+}
+func (s *quizService) FindAll(limit,page uint64, isNotExpired string) ([]entity.Quiz, error) {
+	quizzes, err := s.quizRepository.FindAll(limit,page, isNotExpired)
 	return quizzes, err
 }
 

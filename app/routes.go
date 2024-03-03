@@ -19,11 +19,11 @@ func QuizHTTPHandler(router *gin.Engine, as quizServicev1.QuizService) {
 	h := quizHandlerv1.NewQuizHandler(as)
 	v1 := router.Group("v1")
 
-	
+	v1.GET("/quizzes", h.GetQuizzes)
+	v1.GET("/quizzes/:id", h.GetQuiz)
 	v1.Use(middleware.AuthMiddleware())
 	{
-		v1.GET("/quizzes", h.GetQuizzes)
-		v1.GET("/quizzes/:id", h.GetQuiz)
+		
 		v1.POST("/quizzes", h.CreateQuiz)
 		v1.PUT("/quizzes/:id", h.UpdateQuiz)
 		v1.DELETE("/quizzes/:id", h.DeleteQuiz)
@@ -54,6 +54,9 @@ func JawabanPesertaHTTPHandler(router *gin.Engine, jps jawabanPesertaServicev1.J
 	v1 := router.Group("v1")
 
 	v1.GET("/answers", h.GetJawabanPesertas)
+	v1.GET("/answers-quiz", h.GetJawabanByUserAndQuiz)
+	v1.GET("/answer-users", h.ListResultQuiz)
+	v1.PUT("/answers/skor", h.UpdateSkor)
 	v1.GET("/answers/:id", h.GetJawabanPeserta)
 	v1.POST("/answers", h.CreateJawabanPeserta)
 	v1.PUT("/answers/:id", h.UpdateJawabanPeserta)
@@ -65,20 +68,7 @@ func JawabanPesertaHTTPHandler(router *gin.Engine, jps jawabanPesertaServicev1.J
 	
 }
 
-// func PublisherHTTPHandler(router *gin.Engine, ps publisherServicev1.PublisherService) {
-// 	h := publisherHandlerv1.NewPublisherHandler(ps)
-// 	v1 := router.Group("v1")
 
-// 	v1.Use(middleware.AuthMiddleware())
-// 	{
-// 		v1.GET("/publishers", h.GetPublishers)
-// 		v1.GET("/publishers/:id", h.GetPublisher)
-// 		v1.POST("/publishers", h.CreatePublisher)
-// 		v1.PUT("/publishers/:id", h.UpdatePublisher)
-// 		v1.DELETE("/publishers/:id", h.DeletePublisher)
-// 	}
-	
-// }
 
 func AuthHTTPHandler(router *gin.Engine, as authServicev1.AuthService) {
 	h :=authHandlerv1.NewAuthHandler(as)

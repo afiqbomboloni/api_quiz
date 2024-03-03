@@ -20,23 +20,36 @@ func NewQuizHandler(quizService service.QuizService) *quizHandler {
 	return &quizHandler{quizService}
 }
 
+// pagination for quiz with default limit 10 and page 1
 func (h *quizHandler) GetQuizzes(ctx *gin.Context) {
-	quizzes, err := h.quizService.FindAll()
+	limitString := ctx.DefaultQuery("limit", "5")
+	pageString := ctx.DefaultQuery("page", "1")
+	isNotExpired := ctx.DefaultQuery("isNotExpired", "true")
+
+	limit, err := strconv.ParseUint(limitString, 10, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+        return
+    }
+
+    page, err := strconv.ParseUint(pageString, 10, 64)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page value"})
+        return
+    }
+	
+	quizzes, err := h.quizService.FindAll(limit,page, isNotExpired)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "not found"})
 		return
 	}
+	
 
 	var quizzesResponse []response.QuizResponse
-	for _, q := range quizzes {
-		quizzesResponse = append(quizzesResponse, response.QuizResponse{
-			ID:           q.ID,
-			Judul:        q.Judul,
-			Deskripsi:    q.Deskripsi,
-			WaktuMulai:   q.WaktuMulai.Format("2006-01-02T15:04:05Z"),
-			WaktuSelesai: q.WaktuSelesai.Format("2006-01-02T15:04:05Z"),
-		})
+	for _, quiz := range quizzes {
+		total_soal,_ := h.quizService.CountQuestion(quiz.ID)
+		quizzesResponse = append(quizzesResponse, response.NewQuizResponse(quiz, total_soal))
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -44,6 +57,7 @@ func (h *quizHandler) GetQuizzes(ctx *gin.Context) {
 		"data":    quizzesResponse,
 	})
 }
+
 
 func (h *quizHandler) GetQuiz(ctx *gin.Context) {
 	idString := ctx.Param("id")

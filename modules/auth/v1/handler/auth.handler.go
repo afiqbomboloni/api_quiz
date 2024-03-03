@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/afiqbomboloni/api_quiz/modules/auth/v1/service"
 	"github.com/afiqbomboloni/api_quiz/request"
@@ -36,8 +35,16 @@ func (h *authHandler) Register(ctx *gin.Context) {
 		})
 		return
 	}
+	user, _ := h.authService.AuthValidate(authRequest.Email, authRequest.Password)
+	token, _ := h.authService.GenerateAccessToken(ctx, user)
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
+		"data": gin.H{
+			"id":    user.ID,
+			"email": authRequest.Email,
+			"nama":  authRequest.Nama,
+			"token": token,
+		},
 	})
 
 }
@@ -73,15 +80,19 @@ func (h *authHandler) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"data":  user.Email,
-		"token": token,
+		"data": gin.H{
+			"id":    user.ID,
+			"name":  user.Nama,
+			"role":  user.Role,
+			"email": user.Email,
+			"token": token,
+		},
+		"message": "success",
 	})
 
 }
 
 func (h *authHandler) Logout(ctx *gin.Context) {
-	token := ctx.GetHeader("Authorization")
-	token = strings.TrimPrefix(token, "Bearer ")
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "logout",
 	})
