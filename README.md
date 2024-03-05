@@ -34,6 +34,6 @@ go run cmd/main.go
 The application will run on `http://localhost:8080` by default.
 
 
-To run seeder, use the following command:
+To run seeder for create ADMIN, use the following command:
 
 go run db/seeders/main.go
